@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import Web3 from 'web3';
-import { contractAbi } from '../abi/abi';
+const contractAbi = require("../../contract-abi.json");
 
 const Index = () => {
   const [isMetamaskInstalled, setIsMetamaskInstalled] = useState(true);
@@ -18,30 +18,27 @@ const Index = () => {
     const contract = new web3.eth.Contract(contractAbi, process.env.CONTRACT_ADDRESS);
     console.log("contract", contract);
 
-    const accounts = await window.ethereum.enable();
-    console.log("accounts", accounts);
-
-    // const totalSupply = await contract.methods.cooldownSeconds().call();
-    // console.log("totalSupply", totalSupply);
-
-    // checkTokenBalance(contract);
     const id = await web3.eth.net.getId();
     console.log("id", id);
+
     const addresses = await web3.eth.getAccounts();
     console.log("addresses", addresses);
+
+    const tokenName = await contract.methods.name().call();
+    console.log("tokenName", tokenName);
+
+    const balanceOf = await contract.methods.balanceOf(addresses[0]).call();
+    console.log("balanceOf", balanceOf);
   }
   
   useEffect(() => {
-    const { ethereum } = window;
-    if (!ethereum) {
+    // const { ethereum } = window;
+    if (!window.ethereum) {
       setIsMetamaskInstalled(false);
     }
     else {
       connectToBlockchain();
     }
-
-
-
   }, []);
 
   return (
