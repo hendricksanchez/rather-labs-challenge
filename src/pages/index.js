@@ -13,6 +13,8 @@ const Index = ({ surveyData }) => {
   const [tokenSymbol, setTokenSymbol] = useState(null);
   const [showSurvey, setShowSurvey] = useState(false);
 
+  // const { ethereum } = window;
+
   const connectToBlockchain = async () => {
     const accounts = await window.ethereum.enable();
     // console.log("accounts", accounts);
@@ -31,16 +33,18 @@ const Index = ({ surveyData }) => {
     // console.log("addresses", addresses);
 
     const name = await contract.methods.name().call();
-    // console.log("tokenName", name);
-    setTokenName(tokenName);
+    console.log("tokenName", name);
+    setTokenName(name);
 
     const symbol = await contract.methods.symbol().call();
-    console.log("tokenSymbol", symbol);
+    console.log("tokenSymbol", `$${symbol}`);
     setTokenName(symbol);
 
     const balance = await contract.methods.balanceOf(addresses[0]).call();
-    console.log("balanceOf", balance);
-    setTokenBalance(balance);
+    console.log("balanceOf", web3.utils.fromWei(balance));
+    setTokenBalance(web3.utils.fromWei(balance));
+
+    
   }
 
   // const getContract = () => {
@@ -54,13 +58,24 @@ const Index = ({ surveyData }) => {
     const contract = new web3.eth.Contract(contractAbi, process.env.CONTRACT_ADDRESS);
     const addresses = await web3.eth.getAccounts();
 
-    // const parameters = {
-    //   to: process.env.CONTRACT_ADDRESS,
-    //   from: addresses[0],
-    //   data: contract.methods.submit()
-    // };
+    const parameters = {
+      from: addresses[0],
+      to: process.env.CONTRACT_ADDRESS,
+      data: contract.methods.submit(16624220, [5, 3, 7]).encodeABI(),
+    };
 
-    // const gas = await contract.methods.submit('sd1sd1s1df5df21df', '0').estimateGas();
+    try {
+      const trxHash = await window.ethereum.request({
+        method: "eth_sendTransaction",
+        params: [parameters]
+      })
+      console.log("trxHash", trxHash);
+    }
+    catch (e) {
+      console.error("Horror!", e);
+    }
+
+    // const gas = await contract.methods.submit(16624220, [5, 3, 7]).estimateGas({from: addresses[0]}).then((response) => {response.toString()}).catch((err) => {console.error("Horror", err); return 0;});
     // console.log("gas", gas.toString());
     
     // const balanceFrom = await web3.utils.fromWei(
@@ -72,7 +87,6 @@ const Index = ({ surveyData }) => {
   }
   
   useEffect(() => {
-    // const { ethereum } = window;
     if (!window.ethereum) {
       setIsMetamaskInstalled(false);
     }
