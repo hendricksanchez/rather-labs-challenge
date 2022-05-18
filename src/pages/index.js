@@ -1,108 +1,20 @@
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import Web3 from 'web3';
 import Survey from '../components/Survey';
-const contractAbi = require("../../contract-abi.json");
+import useWallet from '../hooks/useWallet';
 
 const Index = ({ surveyData }) => {
-  const [isMetamaskInstalled, setIsMetamaskInstalled] = useState(true);
-  const [isTheCorrectNet, setIsTheCorrectNet] = useState(false);
-  const [isSurveyDataAvailable, setIsSurveyDataAvailable] = useState(false);
-  const [tokenBalance, setTokenBalance] = useState(0);
-  const [tokenName, setTokenName] = useState(null);
-  const [tokenSymbol, setTokenSymbol] = useState(null);
-  const [showSurvey, setShowSurvey] = useState(false);
-
-  // const { ethereum } = window;
-
-  const connectToBlockchain = async () => {
-    const accounts = await window.ethereum.enable();
-    // console.log("accounts", accounts);
-
-    const web3 = new Web3(Web3.givenProvider);
-    const contract = new web3.eth.Contract(contractAbi, process.env.CONTRACT_ADDRESS);
-    // console.log("contract", contract);
-
-    //this 'id' returned must match with the Net Ropsten ID (compare to .env file CHAIN_ID)
-    const id = await web3.eth.net.getId();
-    // console.log("id", id);
-    if (process.env.CHAIN_ID == id)
-      setIsTheCorrectNet(true);
-
-    const addresses = await web3.eth.getAccounts();
-    // console.log("addresses", addresses);
-
-    const name = await contract.methods.name().call();
-    console.log("tokenName", name);
-    setTokenName(name);
-
-    const symbol = await contract.methods.symbol().call();
-    console.log("tokenSymbol", `$${symbol}`);
-    setTokenName(symbol);
-
-    const balance = await contract.methods.balanceOf(addresses[0]).call();
-    console.log("balanceOf", web3.utils.fromWei(balance));
-    setTokenBalance(web3.utils.fromWei(balance));
-
-    
-  }
-
-  // const getContract = () => {
-  //   const web3 = new Web3(Web3.givenProvider);
-  //   const provider = 
-  // }
-
-  const handleSubmitSurvey = async () => {
-    console.log("handleSubmitSurvey hereeeee!");
-    const web3 = new Web3(Web3.givenProvider);
-    const contract = new web3.eth.Contract(contractAbi, process.env.CONTRACT_ADDRESS);
-    const addresses = await web3.eth.getAccounts();
-
-    const parameters = {
-      from: addresses[0],
-      to: process.env.CONTRACT_ADDRESS,
-      data: contract.methods.submit(16624220, [5, 3, 7]).encodeABI(),
-    };
-
-    try {
-      const trxHash = await window.ethereum.request({
-        method: "eth_sendTransaction",
-        params: [parameters]
-      })
-      console.log("trxHash", trxHash);
-    }
-    catch (e) {
-      console.error("Horror!", e);
-    }
-
-    // const gas = await contract.methods.submit(16624220, [5, 3, 7]).estimateGas({from: addresses[0]}).then((response) => {response.toString()}).catch((err) => {console.error("Horror", err); return 0;});
-    // console.log("gas", gas.toString());
-    
-    // const balanceFrom = await web3.utils.fromWei(
-    //   await web3.eth.getBalance(addresses[0]),
-    //   'ether'
-    // );
-    // console.log("balanceFrom", balanceFrom);
-
-  }
+  const {
+    isWalletInstalled,
+    isWalletConnected,
+    showSurvey,
+    setShowSurvey,
+    tokenBalance,
+    tokenName,
+    tokenSymbol,
+    isTheRightNetwork,
+    connectWallet
+  } = useWallet();
   
-  useEffect(() => {
-    if (!window.ethereum) {
-      setIsMetamaskInstalled(false);
-    }
-    else {
-      connectToBlockchain();
-    }
-    // console.log("surveyData", surveyData);
-    if (surveyData) {
-      setIsSurveyDataAvailable(true);
-    }
-  }, []);
-
-  // useEffect(() => {
-  //   console.log("showSurvey", showSurvey);
-  // }, [showSurvey]);
-
   return (
     <div className="container flex flex-wrap max-w-full h-screen sm:p-5 lg:p-16">
       <div className="bg-slate-50 rounded-xl shadow-md overflow-hidden w-full sm:p-2 lg:p-5">
@@ -131,14 +43,8 @@ const Index = ({ surveyData }) => {
           </div>
 
           <div className="flex flex-col items-center justify-start py-6">
-            {/* {isMetamaskInstalled && (
-              <div className="flex flex-col items-center justify-center ">
-                <p className="text-3xl my-4">First, let`s to connect to the wallet</p>
-                <button type="button" className="btn btn-blue">Connect Wallet</button>
-              </div>
-            )} */}
 
-            {!isMetamaskInstalled && (
+            {!isWalletInstalled && (
               <div id="alert-4" className="flex p-4 mb-4 bg-orange-100 rounded-lg dark:bg-orange-200" role="alert">
                 <svg className="flex-shrink-0 w-5 h-5 text-orange-700 dark:text-orange-800" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"></path></svg>
                 <div className="ml-3 text-sm font-medium text-orange-700 dark:text-orange-800">
@@ -147,40 +53,64 @@ const Index = ({ surveyData }) => {
               </div>
             )}
 
-            {!showSurvey && (
-              <div className="flex flex-col w-1/2 items-center justify-center">
-                <div className='flex flex-row my-5'>
-                  <Image src={surveyData.image} width={85} height={85} />
-                  <span className="text-5xl my-4">{surveyData.title}</span>
-                </div>
-                <button onClick={() => setShowSurvey(!showSurvey)} type="button" className="btn btn-blue">Start survey</button>
+            {!isWalletConnected && (
+              <div className="flex flex-col justify-center items-center">
+                <p className="text-3xl font-bold pt-8 pb-12">
+                  First, we must connect to your wallet.
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-blue"
+                  onClick={connectWallet}
+                >
+                  Connect to Metamask
+                </button>
               </div>
             )}
-
-            {showSurvey && (
-              <div className="flex flex-col w-1/2 items-center justify-center">
-                <div className='flex flex-row my-5'>
-                  <Image src={surveyData.image} width={65} height={65} />
-                  <span className="text-3xl my-4">{surveyData.title}</span>
-                </div>
-                <div className="flex flex-wrap w-full flex-col py-5">
-                  <Survey
-                    questions={surveyData.questions}
-                    handleSubmitSurvey={handleSubmitSurvey}
-                  />
-                </div>
-              </div>
+            
+            {surveyData && isWalletConnected && (
+              <>
+                {!showSurvey && (
+                  <div className="flex flex-col w-1/2 items-center justify-center">
+                    <div className='flex flex-row my-5'>
+                      <Image src={surveyData.image} width={85} height={85} />
+                      <span className="text-5xl my-4">{surveyData.title}</span>
+                    </div>
+                    <button onClick={() => setShowSurvey(!showSurvey)} type="button" className="btn btn-blue">Start survey</button>
+                  </div>
+                )}
+                {showSurvey && (
+                  <div className="flex flex-col w-1/2 items-center justify-center">
+                    <div className='flex flex-row my-5'>
+                      <Image src={surveyData.image} width={65} height={65} />
+                      <span className="text-3xl my-4">{surveyData.title}</span>
+                    </div>
+                    <div className="flex flex-wrap w-full flex-col py-5">
+                      <Survey
+                        questions={surveyData.questions}
+                        handleSubmitSurvey={handleSubmitSurvey}
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
+            {!surveyData && (
+              <div>
+                Survey Data is not available!
+              </div>
+            )}
+            
           </div>
           
         </div>
         
       </div>
-
     </div>
   );
 };
+
 export default Index;
 
 export async function getServerSideProps() {
