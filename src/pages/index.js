@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import Web3 from 'web3';
+import Survey from '../components/Survey';
 const contractAbi = require("../../contract-abi.json");
 
 const Index = ({ surveyData }) => {
@@ -14,23 +15,23 @@ const Index = ({ surveyData }) => {
 
   const connectToBlockchain = async () => {
     const accounts = await window.ethereum.enable();
-    console.log("accounts", accounts);
+    // console.log("accounts", accounts);
 
     const web3 = new Web3(Web3.givenProvider);
     const contract = new web3.eth.Contract(contractAbi, process.env.CONTRACT_ADDRESS);
-    console.log("contract", contract);
+    // console.log("contract", contract);
 
     //this 'id' returned must match with the Net Ropsten ID (compare to .env file CHAIN_ID)
     const id = await web3.eth.net.getId();
-    console.log("id", id);
+    // console.log("id", id);
     if (process.env.CHAIN_ID == id)
       setIsTheCorrectNet(true);
 
     const addresses = await web3.eth.getAccounts();
-    console.log("addresses", addresses);
+    // console.log("addresses", addresses);
 
     const name = await contract.methods.name().call();
-    console.log("tokenName", name);
+    // console.log("tokenName", name);
     setTokenName(tokenName);
 
     const symbol = await contract.methods.symbol().call();
@@ -42,9 +43,33 @@ const Index = ({ surveyData }) => {
     setTokenBalance(balance);
   }
 
-  // const handleStartSurvey = () => {
-  //   setShowSurvey(true);
+  // const getContract = () => {
+  //   const web3 = new Web3(Web3.givenProvider);
+  //   const provider = 
   // }
+
+  const handleSubmitSurvey = async () => {
+    console.log("handleSubmitSurvey hereeeee!");
+    const web3 = new Web3(Web3.givenProvider);
+    const contract = new web3.eth.Contract(contractAbi, process.env.CONTRACT_ADDRESS);
+    const addresses = await web3.eth.getAccounts();
+
+    // const parameters = {
+    //   to: process.env.CONTRACT_ADDRESS,
+    //   from: addresses[0],
+    //   data: contract.methods.submit()
+    // };
+
+    // const gas = await contract.methods.submit('sd1sd1s1df5df21df', '0').estimateGas();
+    // console.log("gas", gas.toString());
+    
+    // const balanceFrom = await web3.utils.fromWei(
+    //   await web3.eth.getBalance(addresses[0]),
+    //   'ether'
+    // );
+    // console.log("balanceFrom", balanceFrom);
+
+  }
   
   useEffect(() => {
     // const { ethereum } = window;
@@ -54,18 +79,18 @@ const Index = ({ surveyData }) => {
     else {
       connectToBlockchain();
     }
-    console.log("surveyData", surveyData);
+    // console.log("surveyData", surveyData);
     if (surveyData) {
       setIsSurveyDataAvailable(true);
     }
   }, []);
 
-  useEffect(() => {
-    console.log("showSurvey", showSurvey);
-  }, [showSurvey]);
+  // useEffect(() => {
+  //   console.log("showSurvey", showSurvey);
+  // }, [showSurvey]);
 
   return (
-    <div className="container flex max-w-full sm:p-5 lg:p-16">
+    <div className="container flex flex-wrap max-w-full h-screen sm:p-5 lg:p-16">
       <div className="bg-slate-50 rounded-xl shadow-md overflow-hidden w-full sm:p-2 lg:p-5">
         
         <div className="flex flex-col">
@@ -85,13 +110,13 @@ const Index = ({ surveyData }) => {
               </div>
               <div className='justify-end'>
                 <span className='text-3xl my-4'>
-                  Participate at our Quiz and get earn some tokens!
+                  {/* Participate at our Quiz and get earn some tokens! */}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-start h-80 py-6">
+          <div className="flex flex-col items-center justify-start py-6">
             {/* {isMetamaskInstalled && (
               <div className="flex flex-col items-center justify-center ">
                 <p className="text-3xl my-4">First, let`s to connect to the wallet</p>
@@ -109,9 +134,9 @@ const Index = ({ surveyData }) => {
             )}
 
             {!showSurvey && (
-              <div className="flex flex-col items-center justify-center">
+              <div className="flex flex-col w-1/2 items-center justify-center">
                 <div className='flex flex-row my-5'>
-                  <Image src={surveyData.image} width={85} height={85}/>
+                  <Image src={surveyData.image} width={85} height={85} />
                   <span className="text-5xl my-4">{surveyData.title}</span>
                 </div>
                 <button onClick={() => setShowSurvey(!showSurvey)} type="button" className="btn btn-blue">Start survey</button>
@@ -119,11 +144,17 @@ const Index = ({ surveyData }) => {
             )}
 
             {showSurvey && (
-              <div className="flex flex-col items-center justify-center">
+              <div className="flex flex-col w-1/2 items-center justify-center">
                 <div className='flex flex-row my-5'>
-                  <span className="text-5xl my-4">{surveyData.title}</span>
+                  <Image src={surveyData.image} width={65} height={65} />
+                  <span className="text-3xl my-4">{surveyData.title}</span>
                 </div>
-                {/* <button onClick={() => setShowSurvey(!showSurvey)} type="button" className="btn btn-blue">Start survey</button> */}
+                <div className="flex flex-wrap w-full flex-col py-5">
+                  <Survey
+                    questions={surveyData.questions}
+                    handleSubmitSurvey={handleSubmitSurvey}
+                  />
+                </div>
               </div>
             )}
 
