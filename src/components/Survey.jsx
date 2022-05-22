@@ -24,7 +24,6 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
     })
     setShowQuestions(false);
     setShowOverview(true);
-    // console.log("Overview shown!");
   };
 
   // const handleSendAnswer = (e) => {
@@ -33,8 +32,7 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
   // }
   
   useEffect(() => {
-    // handlerQuestions();
-    setShowOverview(true);
+    handlerQuestions();
   }, []);
 
   if (!questions) return '';
@@ -100,9 +98,9 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
             <button
               type="button"
               className="btn btn-blue"
-              onClick={handleSubmitSurvey}
+              onClick={() => handleSubmitSurvey()}
             >
-              Submit your anwers
+              Submit your answers
             </button>
           {/* </div> */}
         </div>

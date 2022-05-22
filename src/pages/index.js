@@ -1,13 +1,13 @@
 import Image from 'next/image';
 import Survey from '../components/Survey';
+import useSurvey from '../hooks/useSurvey';
 import useWallet from '../hooks/useWallet';
 
 const Index = ({ surveyData }) => {
+
   const {
     isWalletInstalled,
     isWalletConnected,
-    showSurvey,
-    setShowSurvey,
     tokenBalance,
     tokenName,
     tokenSymbol,
@@ -16,6 +16,12 @@ const Index = ({ surveyData }) => {
     connectWallet,
     handleNetworkSwitch
   } = useWallet();
+
+  const {
+    showSurvey,
+    setShowSurvey,
+    submitSurvey,
+  } = useSurvey();
 
   return (
     <div className="container flex flex-wrap max-w-full h-screen sm:p-5 lg:p-16">
@@ -71,7 +77,7 @@ const Index = ({ surveyData }) => {
                     <button
                       type="button"
                       className="btn btn-blue"
-                      onClick={connectWallet}
+                      onClick={() => connectWallet()}
                     >
                       Connect to Metamask
                     </button>
@@ -99,7 +105,7 @@ const Index = ({ surveyData }) => {
                             <div className="flex flex-wrap w-full flex-col py-5">
                               <Survey
                                 questions={surveyData.questions}
-                                handleSubmitSurvey={handleSubmitSurvey}
+                                handleSubmitSurvey={() => submitSurvey()}
                               />
                             </div>
                           </div>
