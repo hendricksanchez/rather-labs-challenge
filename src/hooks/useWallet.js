@@ -112,11 +112,9 @@ const useWallet = () => {
 
   const getBasicsFromContract = async () => {
     try {
-      setTimeout(async () => {
-        await getTokenName();
-        await getTokenSymbol();
-        await getTokenBalance();
-      }, 1000)
+      await getTokenName();
+      await getTokenSymbol();
+      await getTokenBalance();
     }
     catch (err) {
       console.error("Cannot get basics from contract", err);
@@ -194,7 +192,7 @@ const useWallet = () => {
   const addWalletListener = () => {
     const ethereum = getWindowEthereum();
     ethereum.on("chainChanged", onChainChanged)
-    ethereum.on("accountsChanged", onAccountsChanged);
+    // ethereum.on("accountsChanged", onAccountsChanged);
   }
 
   useEffect(() => {
