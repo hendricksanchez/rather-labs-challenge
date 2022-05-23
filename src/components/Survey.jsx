@@ -4,6 +4,7 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
   const [showQuestions, setShowQuestions] = useState(false);
   const [questionNumber, setQuestionNumber] = useState(null);
   const [showOverview, setShowOverview] = useState(false);
+  const [timeleftProgressBar, setTimeleftProgressBar] = useState(100);
 
   async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
@@ -15,16 +16,29 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
 
   const handlerQuestions = async () => {
     setShowQuestions(true);
-    await asyncForEach(questions, async (question, number) => {
-      // console.log("question NUMBER", number);
+    await asyncForEach(questions, async ({lifetimeSeconds}, number) => {
+      setTimeleftProgressBar(100);
       setQuestionNumber(number);
-      // console.log("END of question number", number);
-      // console.log("waitFor");
-      await waitFor(question.lifetimeSeconds);
+      handleCountdown(lifetimeSeconds, lifetimeSeconds, (width) => {
+        setTimeleftProgressBar(width);
+      });
+      await waitFor(lifetimeSeconds);
     })
     setShowQuestions(false);
     setShowOverview(true);
   };
+
+  const handleCountdown = (timeleft, timetotal, callback) => {
+    var progress = (timeleft / timetotal) * 100;
+    if (typeof callback == "function") {
+      callback(progress);
+    }
+    if(timeleft > 0) {
+      setTimeout(() => {
+        handleCountdown(timeleft - 1, timetotal, callback);
+      }, 1000);
+    }
+  }
 
   // const handleSendAnswer = (e) => {
   //   e.preventDefault();
@@ -43,7 +57,7 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
       {showQuestions && questionNumber != null && (
         <form>
         <div className="shadow-lg lg:max-w-full lg:flex">
-          <div className="h-48 lg:w-48 flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l" style={{ backgroundImage: `url(${questions[questionNumber].image})`}} title="Woman holding a mug"></div>
+          <div className="lg:w-48 flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l" style={{ backgroundImage: `url(${questions[questionNumber].image})`, backgroundSize: 'cover'}}></div>
           <div className="w-full bg-white rounded-b lg:rounded-b-none lg:rounded-r flex flex-col justify-between leading-normal">
             <div className="p-4">
               <div>
@@ -55,7 +69,7 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
                   {questions[questionNumber].options.map((option, index) => {
                     return (
                       <>
-                        <div key={index} className="flex flex-row py-2">
+                        <div key={index.toString()} className="flex flex-row py-2">
                           <input
                             className="w-4 h-4 border-gray-300 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600"
                             id={`${questions[questionNumber].text}-${index}`}
@@ -79,8 +93,8 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
                 </div> */}
               </div>
             </div>
-            <div className="w-full bg-gray-200 h-1.5 dark:bg-gray-700">
-              <div className={`bg-blue-600 h-1.5 w-11/12`}></div>
+            <div className="w-full bg-gray-200 h-1.5 dark:bg-gray-400">
+              <div className={`bg-blue-600 h-1.5`} style={{ width: `${timeleftProgressBar}%` }}></div>
             </div>
           </div>
         </div>

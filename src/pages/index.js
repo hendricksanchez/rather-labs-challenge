@@ -11,16 +11,17 @@ const Index = ({ surveyData }) => {
     tokenBalance,
     tokenName,
     tokenSymbol,
-    account,
+    walletAddress,
     isTheCorrectNetwork,
     connectWallet,
-    handleNetworkSwitch
+    checkItIsCorrectNetwork,
+    handleNetworkSwitch,
+    submitContract
   } = useWallet();
 
   const {
     showSurvey,
-    setShowSurvey,
-    submitSurvey,
+    setShowSurvey
   } = useSurvey();
 
   return (
@@ -37,13 +38,13 @@ const Index = ({ surveyData }) => {
                 </span>
               </div>
               
-              {isWalletConnected && account && (
+              {isWalletConnected && walletAddress && (
                 <div>
                   <div className="p-3 bg-blue-200 items-center text-blue-600 leading-none lg:rounded-full flex lg:inline-flex" role="alert">
                     {tokenName && tokenSymbol && tokenBalance && (
                       <span className="flex rounded-full bg-blue-500 px-2 py-1 text-sm font-bold text-white mr-3">{`${tokenName} ($${tokenSymbol}) Balance: ${tokenBalance}`}</span>
                     )}
-                    <span className="font-semibold text-left flex-auto">{`Account ${account.substring(0, 5)}...${account.substring(account.length-4)}`}</span>
+                    <span className="font-semibold text-left flex-auto">{`Account ${walletAddress.substring(0, 5)}...${walletAddress.substring(walletAddress.length-4)}`}</span>
                   </div>
                 </div>
               )}
@@ -77,7 +78,7 @@ const Index = ({ surveyData }) => {
                     <button
                       type="button"
                       className="btn btn-blue"
-                      onClick={() => connectWallet()}
+                      onClick={() => connectWallet(checkItIsCorrectNetwork)}
                     >
                       Connect to Metamask
                     </button>
@@ -105,7 +106,7 @@ const Index = ({ surveyData }) => {
                             <div className="flex flex-wrap w-full flex-col py-5">
                               <Survey
                                 questions={surveyData.questions}
-                                handleSubmitSurvey={() => submitSurvey()}
+                                handleSubmitSurvey={() => submitContract()}
                               />
                             </div>
                           </div>
@@ -150,7 +151,7 @@ export async function getServerSideProps() {
       return res.json()
     })
     .catch(res => {
-      console.error(`ERROR fetching ${process.env.SURVEY_URL} | ${res}`);
+      console.error(`Error fetching Survey URL | ${res}`);
       return null;
     })
   

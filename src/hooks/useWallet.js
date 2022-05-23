@@ -1,32 +1,37 @@
 import { useState, useEffect } from "react";
 import Web3 from "web3";
 import networks from '../../networks';
+// import useAppContext from "../contexts/appContext";
 const contractAbi = require("../../contract-abi.json");
 
 const useWallet = () => {
+  //states from AppContext
+  // const { walletAddress, setWalletAddress } = useAppContext();
+  const [walletAddress, setWalletAddress] = useState(null);
   //web3
   const [web3Provider, setWeb3Provider] = useState(null);
   //wallet
   const [isWalletInstalled, setIsWalletInstalled] = useState(true);
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [isWalletConnected, setIsWalletConnected] = useState(null);
   const [isTheCorrectNetwork, setIsTheCorrectNetwork] = useState(null);
   const [smartContract, setSmartContract] = useState(null);
-  const [account, setAccount] = useState(null);
   //token
-  const [tokenBalance, setTokenBalance] = useState(null);
   const [tokenName, setTokenName] = useState(null);
   const [tokenSymbol, setTokenSymbol] = useState(null);
+  const [tokenBalance, setTokenBalance] = useState(null);
   
   const getWindowEthereum = () => {
     return window.ethereum;
   }
 
-  const connectWallet = async () => {
+  const connectWallet = async (callback) => {
     try {
       const ethereum = getWindowEthereum();
-      await ethereum.enable();
+      const addresses = await ethereum.request({ method: 'eth_requestAccounts' });
       setIsWalletConnected(true);
-      await checkItIsCorrectNetwork();
+      setWalletAddress(addresses[0]);
+      if (typeof callback == 'function')
+        await callback();
     }
     catch (err) {
       console.error("Cannot connect to the Wallet -", err);
@@ -38,10 +43,15 @@ const useWallet = () => {
     try {
       const provider = getWeb3Provider();
       const networkId = await provider.eth.net.getId();
-      if (networkId == process.env.CHAIN_ID)
+      if (networkId == process.env.CHAIN_ID) {
         setIsTheCorrectNetwork(true);
-      else
-        setIsTheCorrectNetwork(false);  
+      }
+      else {
+        setTokenName(null);
+        setTokenSymbol(null);
+        setTokenBalance(null);
+        setIsTheCorrectNetwork(false);
+      }
     }
     catch (err) {
       console.error("Cannot check if is the correct network -", err);
@@ -61,16 +71,12 @@ const useWallet = () => {
   }
 
   const getContract = () => {
-    // console.log("a veeeer el smartContract", smartContract);
     if (smartContract == null) {
       const provider = getWeb3Provider();
-      // console.log("contract does not exists!, creating it...");
       const contract = new provider.eth.Contract(contractAbi, process.env.CONTRACT_ADDRESS);
       setSmartContract(contract);
-      // console.log("contract created", contract);
       return contract;
     }
-    // console.log("the contract EXISTS! -", smartContract);
     return smartContract;
   }
 
@@ -104,32 +110,12 @@ const useWallet = () => {
     }
   }
 
-  const getAccounts = async () => {
-    try {
-      const provider = getWeb3Provider();
-      const accounts = await provider.eth.getAccounts();
-      // console.log("accounts", accounts);
-      //only set the first account
-      setAccount(accounts[0]);
-    }
-    catch (err) {
-      console.error("Cannot get accounts from Wallet -", err);
-      setAccount(null);
-    }
-  }
-
   const getBasicsFromContract = async () => {
     try {
-      // await getContract();
-      // console.log("cero");
       setTimeout(async () => {
-        // console.log("empezando...");
         await getTokenName();
-        // console.log("uno");
         await getTokenSymbol();
-        // console.log("dos");
         await getTokenBalance();
-        // console.log("tres");
       }, 1000)
     }
     catch (err) {
@@ -163,8 +149,7 @@ const useWallet = () => {
     try {
       const provider = getWeb3Provider();
       const contract = await getContract();
-      // console.log("account", account);
-      const balance = await contract.methods.balanceOf(account).call();
+      const balance = await contract.methods.balanceOf(walletAddress).call();
       setTokenBalance(provider.utils.fromWei(balance));
     }
     catch (err) {
@@ -172,13 +157,50 @@ const useWallet = () => {
     }
   }
 
-  useEffect(() => {
-    checkIfWalletIsInstalled();
-  }, []);
+  const submitContract = async () => {
+    console.log("uno");
+    const contract = await getContract();
+    
+    const parameters = {
+      from: walletAddress,
+      to: process.env.CONTRACT_ADDRESS,
+      data: contract.methods.submit(16624220, [5, 3, 7]).encodeABI(),
+    };
+
+    console.log("parameters", parameters);
+
+    try {
+      const ethereum = getWindowEthereum();
+      console.log("Submitting the survey...");
+      const trxHash = await ethereum.request({
+        method: "eth_sendTransaction",
+        params: [parameters]
+      })
+      console.log("Survey submitted", trxHash);
+    }
+    catch (e) {
+      console.error("Error submitting the survey -", e);
+    }
+  }
+
+  const onChainChanged = () => {
+    checkItIsCorrectNetwork();
+  }
+
+  const onAccountsChanged = () => {
+    window.location.reload();
+  }
+
+  const addWalletListener = () => {
+    const ethereum = getWindowEthereum();
+    ethereum.on("chainChanged", onChainChanged)
+    ethereum.on("accountsChanged", onAccountsChanged);
+  }
 
   useEffect(() => {
-    if (isWalletConnected) getAccounts();
-  }, [isWalletConnected])
+    checkIfWalletIsInstalled();
+    addWalletListener();
+  }, []);
 
   useEffect(() => {
     if (isTheCorrectNetwork) getBasicsFromContract();
@@ -190,13 +212,15 @@ const useWallet = () => {
     tokenBalance,
     tokenName,
     tokenSymbol,
-    account,
+    walletAddress,
     isTheCorrectNetwork,
     connectWallet,
+    checkItIsCorrectNetwork,
     handleNetworkSwitch,
     getContract,
     checkIfWalletIsInstalled,
-    getWindowEthereum
+    getWindowEthereum,
+    submitContract
   };
 }
  
