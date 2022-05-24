@@ -4,15 +4,7 @@ import { actions, initialState } from "../store/store";
 
 const useSurvey = () => {
   const [showSurvey, setShowSurvey] = useState(false);
-  // const [surveyResults, setSurveyResults] = useState(null);
   const [state, dispatch] = useReducer(surveyReducer, initialState);
-
-  // const getSurveyResults = () => {
-  //   // console.log("state.surveyResults", state.surveyResults);
-  //   // setSurveyResults(state.surveyResults);
-  //   // return state.surveyResults;
-  //   dispatch({ type: actions.VIEW_RESULTS });
-  // };
 
   const answerQuestion = (questionId, answerId) => {
     dispatch({

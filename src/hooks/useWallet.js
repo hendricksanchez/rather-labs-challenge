@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import Web3 from "web3";
 import networks from '../../networks';
-// import useAppContext from "../contexts/appContext";
+import { getUniqueIntId } from "../utils/common";
 const contractAbi = require("../../contract-abi.json");
 
 const useWallet = () => {
-  //states from AppContext
+  //context
   // const { walletAddress, setWalletAddress } = useAppContext();
   const [walletAddress, setWalletAddress] = useState(null);
   //web3
@@ -155,14 +155,22 @@ const useWallet = () => {
     }
   }
 
-  const submitContract = async () => {
-    console.log("uno");
+  const submitContract = async (answers) => {
+    console.log("---submitContract---");
+    console.log("answers", answers);
+    const surveyId = getUniqueIntId();
+    console.log("surveyId", surveyId);
+    return false;
+    const selectedAnswers = surveyResults.map((p) => p.answerId);
+    console.log("selectedAnswers", selectedAnswers);
+    return false;
+    // [5, 3, 7]
     const contract = await getContract();
     
     const parameters = {
       from: walletAddress,
       to: process.env.CONTRACT_ADDRESS,
-      data: contract.methods.submit(16624220, [5, 3, 7]).encodeABI(),
+      data: contract.methods.submit(surveyId, selectedAnswers).encodeABI(),
     };
 
     console.log("parameters", parameters);

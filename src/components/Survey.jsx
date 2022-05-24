@@ -1,14 +1,9 @@
 import { useState, useEffect } from "react";
-// import useAppContext from "../contexts/appContext";
 import useSurvey from "../hooks/useSurvey";
 
 const Survey = ({ questions, handleSubmitSurvey }) => {
-  //context
-  // const { answerQuestion, surveyResults } = useAppContext();
   //custom hook
   const {
-    // showSurvey,
-    // setShowSurvey,
     answerQuestion,
     surveyResults
   } = useSurvey();
@@ -17,7 +12,7 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
   const [questionNumber, setQuestionNumber] = useState(null);
   const [showOverview, setShowOverview] = useState(false);
   const [timeleftProgressBar, setTimeleftProgressBar] = useState(100);
-
+  
   async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
       await callback(array[index], index, array);
@@ -37,7 +32,6 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
       await waitFor(lifetimeSeconds);
     })
     setShowQuestions(false);
-    // getSurveyResults();
     setShowOverview(true);
   };
 
@@ -52,10 +46,22 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
       }, 1000);
     }
   }
-  
+
   useEffect(() => {
     handlerQuestions();
+    // console.log("questions", questions);
+    // console.log("dataDePrueba", dataDePrueba);
+    // setShowQuestions(false);
+    // setShowOverview(true);
   }, []);
+
+  // useEffect(() => {
+  //   if (showOverview && !showQuestions && surveyResults) {
+  //     console.log("surveyResults", surveyResults);
+  //     results = surveyResults.map((p) => p.answerId);
+  //     console.log("results", results);
+  //   }
+  // }, [showOverview, showQuestions, surveyResults]);
 
   if (!questions) return '';
   
@@ -106,12 +112,23 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
       )}
       {showOverview && !showQuestions && (
         <div className="flex flex-col justify-center items-center">
-          <p className="text-5xl font-bold pt-8 pb-12">
-            The survey is over, here are the results:
+          <p className="text-4xl font-bold pt-8 pb-12">
+            The survey is over, here are the results...
           </p>
-          <span>
-            {JSON.stringify(surveyResults)}
-          </span>
+          
+          <div className="flex flex-col mb-10">
+            {/* {JSON.stringify(surveyResults)} */}
+            <ul>
+              {questions.map((question, index) => {
+                return (
+                  <li key={index} className="flex flex-row items-center py-2">
+                    <span className="text-xl font-semibold">{question.text}{' => '}{question.options[surveyResults[index].answerId].text}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+
           <button
             type="button"
             className="btn btn-blue"
