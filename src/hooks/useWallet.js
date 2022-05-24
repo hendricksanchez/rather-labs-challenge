@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Web3 from "web3";
 import networks from '../../networks';
 import useWalletContext from "../contexts/walletContext";
@@ -27,18 +27,6 @@ const useWallet = () => {
     tokenBalance,
     setTokenBalance
   } = useWalletContext();
-  // const [walletAddress, setWalletAddress] = useState(null);
-  //web3
-  // const [web3Provider, setWeb3Provider] = useState(null);
-  //wallet
-  // const [isWalletInstalled, setIsWalletInstalled] = useState(true);
-  // const [isWalletConnected, setIsWalletConnected] = useState(null);
-  // const [isTheCorrectNetwork, setIsTheCorrectNetwork] = useState(null);
-  // const [smartContract, setSmartContract] = useState(null);
-  //token
-  // const [tokenName, setTokenName] = useState(null);
-  // const [tokenSymbol, setTokenSymbol] = useState(null);
-  // const [tokenBalance, setTokenBalance] = useState(null);
   
   const getWindowEthereum = () => {
     return window.ethereum;
@@ -176,33 +164,23 @@ const useWallet = () => {
   }
 
   const submitContract = async (answers) => {
-    console.log("---submitContract---");
     console.log("answers", answers);
     const surveyId = getUniqueIntId();
-    console.log("surveyId", surveyId);
-    return false;
-    const selectedAnswers = surveyResults.map((p) => p.answerId);
-    console.log("selectedAnswers", selectedAnswers);
-    return false;
-    // [5, 3, 7]
     const contract = await getContract();
-    
     const parameters = {
       from: walletAddress,
       to: process.env.CONTRACT_ADDRESS,
-      data: contract.methods.submit(surveyId, selectedAnswers).encodeABI(),
+      data: contract.methods.submit(surveyId, answers).encodeABI(),
     };
-
-    console.log("parameters", parameters);
-
     try {
       const ethereum = getWindowEthereum();
       console.log("Submitting the survey...");
-      const trxHash = await ethereum.request({
+      const transactionHash = await ethereum.request({
         method: "eth_sendTransaction",
         params: [parameters]
       })
-      console.log("Survey submitted", trxHash);
+      console.log("Survey submitted", transactionHash);
+      return transactionHash;
     }
     catch (e) {
       console.error("Error submitting the survey -", e);

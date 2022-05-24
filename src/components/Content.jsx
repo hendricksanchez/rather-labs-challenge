@@ -7,7 +7,7 @@ import useSurvey from '../hooks/useSurvey';
 import useWallet from '../hooks/useWallet';
 import { alerts } from '../utils/const';
 
-const Content = ({ surveyData }) => {
+const Content = () => {
 
   const {
     isWalletInstalled,
@@ -15,11 +15,12 @@ const Content = ({ surveyData }) => {
     isTheCorrectNetwork,
     connectWallet,
     checkItIsCorrectNetwork,
-    handleNetworkSwitch,
-    submitContract
+    handleNetworkSwitch
+    // submitContract
   } = useWallet();
 
   const {
+    surveyData,
     showSurvey,
     setShowSurvey
   } = useSurvey();
@@ -83,9 +84,7 @@ const Content = ({ surveyData }) => {
                           <Image src={surveyData.image} width={65} height={65} />
                           <span className="text-3xl my-4">{surveyData.title}</span>
                         </Message>
-                        <Survey
-                          questions={surveyData.questions}
-                          handleSubmitSurvey={() => submitContract()} />
+                        <Survey />
                       </>
                     )}
 

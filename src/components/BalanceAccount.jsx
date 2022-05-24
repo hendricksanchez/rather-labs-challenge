@@ -11,11 +11,6 @@ const BalanceAccount = () => {
     walletAddress,
   } = useWallet();
 
-  useEffect(() => {
-    console.log("isWalletConnected", isWalletConnected);
-    console.log("walletAddress", walletAddress);
-  }, [walletAddress]);
-
   if (!isWalletConnected && !walletAddress) return '';
 
   return (
