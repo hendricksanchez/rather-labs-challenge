@@ -1,11 +1,14 @@
-import { AppWrapper } from '../contexts/appContext'
+import { SurveyWrapper } from '../contexts/surveyContext'
+import { WalletWrapper } from '../contexts/walletContext'
 import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }) {
   return (
-    <AppWrapper>
-      <Component {...pageProps} />
-    </AppWrapper>
+    <SurveyWrapper>
+      <WalletWrapper>
+        <Component {...pageProps} />
+      </WalletWrapper>
+    </SurveyWrapper>
   )
 }
 
