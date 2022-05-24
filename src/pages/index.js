@@ -56,7 +56,7 @@ const Index = ({ surveyData }) => {
 
             {!surveyData && (
               <div>
-                Ocurrió un error intentando obtener datos externos
+                There was an error retrieving external data. Please reload the application!
               </div>
             )}
 

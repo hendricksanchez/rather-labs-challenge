@@ -1,6 +1,18 @@
 import { useState, useEffect } from "react";
+// import useAppContext from "../contexts/appContext";
+import useSurvey from "../hooks/useSurvey";
 
 const Survey = ({ questions, handleSubmitSurvey }) => {
+  //context
+  // const { answerQuestion, surveyResults } = useAppContext();
+  //custom hook
+  const {
+    // showSurvey,
+    // setShowSurvey,
+    answerQuestion,
+    surveyResults
+  } = useSurvey();
+  //states
   const [showQuestions, setShowQuestions] = useState(false);
   const [questionNumber, setQuestionNumber] = useState(null);
   const [showOverview, setShowOverview] = useState(false);
@@ -25,6 +37,7 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
       await waitFor(lifetimeSeconds);
     })
     setShowQuestions(false);
+    // getSurveyResults();
     setShowOverview(true);
   };
 
@@ -39,15 +52,8 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
       }, 1000);
     }
   }
-
-  const handleSelectAnswer = (e, questionNumber) => {
-    // e.preventDefault();
-    console.log("handleSelectAnswer", e.target.value);
-    console.log("questionNumber", questionNumber);
-  }
   
   useEffect(() => {
-    // console.log("questions", questions);
     handlerQuestions();
   }, []);
 
@@ -69,14 +75,14 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
                     <ul>
                       {questions[questionNumber].options.map((option, index) => {
                         return (
-                          <li key={index.toString()} className="flex flex-row items-center py-2">
+                          <li key={index} className="flex flex-row items-center py-2">
                             <input
                               className="w-4 h-4 border-gray-300 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600"
                               type="radio"
                               id={`${questions[questionNumber].text}-${index}`}
                               name={questions[questionNumber].text}
                               value={index}
-                              onChange={(e) => handleSelectAnswer(e, questionNumber)}
+                              onChange={(e) => answerQuestion(questionNumber, e.target.value)}
                             />
                             <label
                               htmlFor={`${questions[questionNumber].text}-${index}`}
@@ -101,8 +107,11 @@ const Survey = ({ questions, handleSubmitSurvey }) => {
       {showOverview && !showQuestions && (
         <div className="flex flex-col justify-center items-center">
           <p className="text-5xl font-bold pt-8 pb-12">
-            The survey is over!
+            The survey is over, here are the results:
           </p>
+          <span>
+            {JSON.stringify(surveyResults)}
+          </span>
           <button
             type="button"
             className="btn btn-blue"
