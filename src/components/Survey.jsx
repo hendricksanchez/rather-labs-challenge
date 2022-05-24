@@ -16,8 +16,7 @@ const Survey = () => {
     surveyResults,
     submitSurvey,
     handlerReloadLocation,
-    wasContractSubmitted,
-    disableButton
+    wasSurveySubmitted
   } = useSurvey();
 
   useEffect(() => {
@@ -80,7 +79,7 @@ const Survey = () => {
             </p>
             
             <div className="flex flex-col mb-10">
-              {/* {JSON.stringify(surveyResults)} */}
+              {JSON.stringify(surveyResults)}
               {surveyResults.length === surveyData.questions.length
                 ? (
                     <>
@@ -95,8 +94,9 @@ const Survey = () => {
                       </ul>
                       <Button
                         type='button'
-                        title='Submit your answers'
-                        onClick={() => submitSurvey()} />
+                        title={!wasSurveySubmitted ? 'Submit your answers' : 'Survey submitted'}
+                        onClick={() => submitSurvey()}
+                        disable={wasSurveySubmitted} />
                     </>
                   )
                 : (

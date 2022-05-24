@@ -3,6 +3,7 @@ import Web3 from "web3";
 import networks from '../../networks';
 import useWalletContext from "../contexts/walletContext";
 import { getUniqueIntId } from "../utils/common";
+import useSurvey from "./useSurvey";
 const contractAbi = require("../../contract-abi.json");
 
 const useWallet = () => {
@@ -27,6 +28,10 @@ const useWallet = () => {
     tokenBalance,
     setTokenBalance
   } = useWalletContext();
+
+  // const {
+  //   setWasTrxSubmitted
+  // } = useSurvey();
   
   const getWindowEthereum = () => {
     return window.ethereum;
@@ -163,8 +168,9 @@ const useWallet = () => {
     }
   }
 
-  const submitContract = async (answers) => {
+  const submitTransaction = async (answers) => {
     console.log("answers", answers);
+    const provider = getWeb3Provider();
     const surveyId = getUniqueIntId();
     const contract = await getContract();
     const parameters = {
@@ -178,9 +184,29 @@ const useWallet = () => {
       const transactionHash = await ethereum.request({
         method: "eth_sendTransaction",
         params: [parameters]
-      })
+      });
       console.log("Survey submitted", transactionHash);
       return transactionHash;
+      // ethereum.request({
+      //   method: "eth_sendTransaction",
+      //   params: [parameters]
+      //   })
+      //   .then((trxHash) => {
+      //     console.log("Survey submitted", trxHash);
+      //     const interval = setInterval(() => {
+      //       console.log("Attempting to get transaction receipt...");
+      //       provider.eth.getTransactionReceipt(trxHash, (rec) => {
+      //         console.log("rec", rec);
+      //         if (rec) {
+      //           console.log("receipt", rec);
+      //           clearInterval(interval);
+      //         }
+      //       });
+      //     }, 1000);
+      //     // setWasTrxSubmitted
+      //   })
+      // -----
+      // return transactionHash;
     }
     catch (e) {
       console.error("Error submitting the survey -", e);
@@ -199,6 +225,20 @@ const useWallet = () => {
     const ethereum = getWindowEthereum();
     ethereum.on("chainChanged", onChainChanged)
     // ethereum.on("accountsChanged", onAccountsChanged);
+  }
+
+  const getTransactionReceipt = (trxHash) => {
+    console.log("trxHash", trxHash);
+    const provider = getWeb3Provider();
+    const interval = setInterval(() => {
+      provider.eth.getTransactionReceipt(trxHash, (receipt) => {
+        console.log("verifing receipt...", receipt);
+        if (receipt) {
+          console.log("receipt found!", receipt);
+          clearInterval(interval);
+        }
+      });
+    }, 2000);
   }
 
   useEffect(() => {
@@ -224,7 +264,8 @@ const useWallet = () => {
     getContract,
     checkIfWalletIsInstalled,
     getWindowEthereum,
-    submitContract
+    submitTransaction,
+    getTransactionReceipt
   };
 }
  
