@@ -1,24 +1,44 @@
 import { useState, useEffect } from "react";
 import Web3 from "web3";
 import networks from '../../networks';
+import useWalletContext from "../contexts/walletContext";
 import { getUniqueIntId } from "../utils/common";
 const contractAbi = require("../../contract-abi.json");
 
 const useWallet = () => {
   //context
-  // const { walletAddress, setWalletAddress } = useAppContext();
-  const [walletAddress, setWalletAddress] = useState(null);
+  const {
+    web3Provider,
+    setWeb3Provider,
+    isWalletInstalled,
+    setIsWalletInstalled,
+    isWalletConnected,
+    setIsWalletConnected,
+    walletAddress,
+    setWalletAddress,
+    isTheCorrectNetwork,
+    setIsTheCorrectNetwork,
+    smartContract,
+    setSmartContract,
+    tokenName,
+    setTokenName,
+    tokenSymbol,
+    setTokenSymbol,
+    tokenBalance,
+    setTokenBalance
+  } = useWalletContext();
+  // const [walletAddress, setWalletAddress] = useState(null);
   //web3
-  const [web3Provider, setWeb3Provider] = useState(null);
+  // const [web3Provider, setWeb3Provider] = useState(null);
   //wallet
-  const [isWalletInstalled, setIsWalletInstalled] = useState(true);
-  const [isWalletConnected, setIsWalletConnected] = useState(null);
-  const [isTheCorrectNetwork, setIsTheCorrectNetwork] = useState(null);
-  const [smartContract, setSmartContract] = useState(null);
+  // const [isWalletInstalled, setIsWalletInstalled] = useState(true);
+  // const [isWalletConnected, setIsWalletConnected] = useState(null);
+  // const [isTheCorrectNetwork, setIsTheCorrectNetwork] = useState(null);
+  // const [smartContract, setSmartContract] = useState(null);
   //token
-  const [tokenName, setTokenName] = useState(null);
-  const [tokenSymbol, setTokenSymbol] = useState(null);
-  const [tokenBalance, setTokenBalance] = useState(null);
+  // const [tokenName, setTokenName] = useState(null);
+  // const [tokenSymbol, setTokenSymbol] = useState(null);
+  // const [tokenBalance, setTokenBalance] = useState(null);
   
   const getWindowEthereum = () => {
     return window.ethereum;
@@ -213,13 +233,13 @@ const useWallet = () => {
   }, [isTheCorrectNetwork])
 
   return {
-    isWalletInstalled,
-    isWalletConnected,
-    tokenBalance,
-    tokenName,
-    tokenSymbol,
-    walletAddress,
-    isTheCorrectNetwork,
+    isWalletInstalled: isWalletInstalled,
+    isWalletConnected: isWalletConnected,
+    tokenBalance: tokenBalance,
+    tokenName: tokenName,
+    tokenSymbol: tokenSymbol,
+    walletAddress: walletAddress,
+    isTheCorrectNetwork: isTheCorrectNetwork,
     connectWallet,
     checkItIsCorrectNetwork,
     handleNetworkSwitch,
