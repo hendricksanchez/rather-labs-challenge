@@ -195,8 +195,10 @@ const useWallet = () => {
 
   const addWalletListener = () => {
     const ethereum = getWindowEthereum();
-    ethereum.on("chainChanged", onChainChanged)
-    // ethereum.on("accountsChanged", onAccountsChanged);
+    if (ethereum) {
+      ethereum.on("chainChanged", onChainChanged)
+      // ethereum.on("accountsChanged", onAccountsChanged);
+    }
   }
 
   const checkForTokenBalance = async () => {
