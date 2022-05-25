@@ -61,10 +61,8 @@ const useSurvey = () => {
 
   const submitSurvey = async () => {
     try {
-      const selectedAnswers = state.surveyResults.map((p) => p.answerId);
-      console.log("selectedAnswers", selectedAnswers);
+      const selectedAnswers = surveyResults.map((p) => p.answerId);
       const submittedTrx = await submitTransaction(selectedAnswers);
-      console.log("submittedTrx", submittedTrx);
       if (submittedTrx) {
         setWasSurveySubmitted(true);
         // getTransactionReceipt(submittedTrx);

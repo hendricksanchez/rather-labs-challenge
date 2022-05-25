@@ -4,7 +4,7 @@ const Alert = ({ type, title, subtitle, children }) => {
   
   let cssClass;
   if (type == alerts.WARNING)
-    cssClass = "bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 mb-3 rounded relative text-xl";
+    cssClass = "bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 my-5 rounded relative text-xl";
 
   return (
     <div className={cssClass} role="alert">
