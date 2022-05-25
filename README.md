@@ -1,34 +1,55 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Company Name Survey
 
-## Getting Started
+Company Name Survey is a web application that allows you to earn QUIZ tokens by taking surveys.
 
-First, run the development server:
+## Technologies
+
+React 18.1.0
+Next.js 12.1.6
+Web3 1.7.3
+Dotenv 16.0.1
+TailwindCSS 3.0.24
+
+## To get started
+
+### Related to your particular account in Metamask
+
+First, download the Metamask extension in your browser.
+
+Next, create an account in Metamask and configure it; take note (copy) of the account address in the wallet that was assigned to you, which must start at 0x...
+
+When entering Metamask, the ETH token is observed by default, which will have a value of 0, therefore, we must obtain some ETH to be able to operate with the application.
+
+There are several websites where you can get some test ETH for free. One of these is https://faucet.dimensions.network/, where by placing the address (copied in the previous step) we can obtain some ETH.
+
+Note: Allocation of test ETH can take minutes or even a few hours, please be patient. It will be reflected in the ETH token within Metamask.
+
+### Related to application settings
+
+The application allows the management of different execution environments (local, development, integration and production).
+
+For this, inside the src/environments folder there is a configuration file for each execution environment.
+
+These environment configuration files take into account three variables required for the correct operation of the application.
+
+These are:
+
+CHAIN_ID: Numeric ID that indicates the network to which the application will connect.
+
+CONTRACT_ADDRESS: Alphanumeric address where the smart contract by which the application is governed is deployed.
+
+SURVEY_URL: URL with the survey data in JSON notation.
+
+To run the application just indicate:
 
 ```bash
-npm run dev
+npm run local
 # or
-yarn dev
+yarn local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Additionally, the /src/contract-abi.json file exposes the methods available by the smart contract (already deployed on the blockchain) and that allow the application to call them.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## Application deployed on a server
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+You can visit the site https://rather-labs-challenge-black.vercel.app/ to run the app directly.

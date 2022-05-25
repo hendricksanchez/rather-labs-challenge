@@ -4,5 +4,5 @@ export const initialState = {
 
 export const actions = {
   ANSWER_QUESTION: "ANSWER_QUESTION",
-  VIEW_RESULTS: "VIEW_RESULTS"
+  CLEAR_ALL_QUESTIONS: "CLEAR_ALL_QUESTIONS"
 };
