@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import useWallet from "../hooks/useWallet";
 
 const BalanceAccount = () => {
