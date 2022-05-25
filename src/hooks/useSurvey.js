@@ -4,12 +4,13 @@ import surveyReducer from "../reducers/surveyReducer";
 import { actions, initialState } from "../store/store";
 import { asyncForEach, handleCountdown, waitFor } from '../utils/common';
 import useWallet from './useWallet';
+import { useEffect } from 'react';
 
 const useSurvey = () => {
   //hooks
   const {
     submitTransaction,
-    getTransactionReceipt
+    checkForTokenBalance
   } = useWallet();
   //contexts
   const {
@@ -27,15 +28,9 @@ const useSurvey = () => {
     setTimeleftProgressBar,
     wasSurveySubmitted,
     setWasSurveySubmitted,
+    surveyResults,
+    setSurveyResults
   } = useSurveyContext();
-  //states
-  // const [showSurvey, setShowSurvey] = useState(false);
-  // const [showQuestions, setShowQuestions] = useState(false);
-  // const [questionNumber, setQuestionNumber] = useState(null);
-  // const [showOverview, setShowOverview] = useState(false);
-  // const [timeleftProgressBar, setTimeleftProgressBar] = useState(100);
-  // const [wasContractSubmitted, setWasContractSubmitted] = useState(false);
-  // const [disableButton, setDisableButton] = useState(false);
   //reducer
   const [state, dispatch] = useReducer(surveyReducer, initialState);
 
@@ -64,18 +59,6 @@ const useSurvey = () => {
     });
   }
 
-  // const clearAllQuestions = () => {
-  //   console.log("state.surveyResults BEFORE", state.surveyResults);
-  //   dispatch({
-  //     type: actions.CLEAR_ALL_QUESTIONS,
-  //     // payload: {
-  //     //   questionId: questionId,
-  //     //   answerId: parseInt(answerId)
-  //     // }
-  //   });
-  //   console.log("state.surveyResults AFTER", state.surveyResults);
-  // }
-
   const submitSurvey = async () => {
     try {
       const selectedAnswers = state.surveyResults.map((p) => p.answerId);
@@ -84,7 +67,8 @@ const useSurvey = () => {
       console.log("submittedTrx", submittedTrx);
       if (submittedTrx) {
         setWasSurveySubmitted(true);
-        getTransactionReceipt(submittedTrx);
+        // getTransactionReceipt(submittedTrx);
+        await checkForTokenBalance();
       }
     }
     catch (err) {
@@ -97,6 +81,12 @@ const useSurvey = () => {
     window.location.reload();
   }
 
+  useEffect(() => {
+    if (state?.surveyResults.length > 0) {
+      setSurveyResults(state.surveyResults);
+    }
+  }, [state.surveyResults]);
+
   return {
     surveyData: surveyData,
     setSurveyData: setSurveyData,
@@ -108,11 +98,10 @@ const useSurvey = () => {
     questionNumber: questionNumber,
     showOverview: showOverview,
     timeleftProgressBar: timeleftProgressBar,
-    surveyResults: state.surveyResults,
+    surveyResults,
     submitSurvey,
     handlerReloadLocation,
-    wasSurveySubmitted: wasSurveySubmitted,
-    // setWasSurveySubmitted: setWasSurveySubmitted,
+    wasSurveySubmitted: wasSurveySubmitted
   };
 }
  

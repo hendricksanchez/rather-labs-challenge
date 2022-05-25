@@ -13,6 +13,7 @@ export const SurveyWrapper = ({ children }) => {
   const [showOverview, setShowOverview] = useState(false);
   const [timeleftProgressBar, setTimeleftProgressBar] = useState(100);
   const [wasSurveySubmitted, setWasSurveySubmitted] = useState(false);
+  const [surveyResults, setSurveyResults] = useState([]);
 
   const values = {
     state,
@@ -30,7 +31,9 @@ export const SurveyWrapper = ({ children }) => {
     timeleftProgressBar,
     setTimeleftProgressBar,
     wasSurveySubmitted,
-    setWasSurveySubmitted
+    setWasSurveySubmitted,
+    surveyResults,
+    setSurveyResults
   }
 
   return <SurveyContext.Provider

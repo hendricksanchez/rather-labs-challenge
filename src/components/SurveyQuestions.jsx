@@ -1,21 +1,11 @@
-import { useEffect } from "react";
 import useSurvey from "../hooks/useSurvey";
-// import Option from "./Option";
 
 const SurveyQuestions = ({ questions }) => {
-
   const {
     questionNumber,
     timeleftProgressBar,
-    answerQuestion,
-    handlerQuestions
+    answerQuestion
   } = useSurvey();
-
-  useEffect(() => {
-    console.log("questions", questions);
-    handlerQuestions();
-  }, []);
-
   return (
     <>
       {questionNumber !== null && (
@@ -32,17 +22,6 @@ const SurveyQuestions = ({ questions }) => {
                     <ul>
                       {questions[questionNumber].options.map((option, index) => {
                         return (
-                          // <Option
-                          //   key={index}
-                          //   title={option.text}
-                          //   id={`${questions[questionNumber].text}-${index}`}
-                          //   name={questions[questionNumber].text}
-                          //   value={index}
-                          //   handlerOnChange={answerQuestion}
-                          //   htmlFor={`${questions[questionNumber].text}-${index}`}
-                          //   questionNumber={questionNumber}
-                          // />
-
                           <li key={index} className="flex flex-row items-center py-2">
                             <input
                               className="w-4 h-4 border-gray-300 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600"

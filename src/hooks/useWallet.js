@@ -3,7 +3,6 @@ import Web3 from "web3";
 import networks from '../../networks';
 import useWalletContext from "../contexts/walletContext";
 import { getUniqueIntId } from "../utils/common";
-import useSurvey from "./useSurvey";
 const contractAbi = require("../../contract-abi.json");
 
 const useWallet = () => {
@@ -28,10 +27,6 @@ const useWallet = () => {
     tokenBalance,
     setTokenBalance
   } = useWalletContext();
-
-  // const {
-  //   setWasTrxSubmitted
-  // } = useSurvey();
   
   const getWindowEthereum = () => {
     return window.ethereum;
@@ -161,6 +156,7 @@ const useWallet = () => {
       const provider = getWeb3Provider();
       const contract = await getContract();
       const balance = await contract.methods.balanceOf(walletAddress).call();
+      // console.log("balance", balance);
       setTokenBalance(provider.utils.fromWei(balance));
     }
     catch (err) {
@@ -169,8 +165,6 @@ const useWallet = () => {
   }
 
   const submitTransaction = async (answers) => {
-    console.log("answers", answers);
-    const provider = getWeb3Provider();
     const surveyId = getUniqueIntId();
     const contract = await getContract();
     const parameters = {
@@ -180,33 +174,11 @@ const useWallet = () => {
     };
     try {
       const ethereum = getWindowEthereum();
-      console.log("Submitting the survey...");
       const transactionHash = await ethereum.request({
         method: "eth_sendTransaction",
         params: [parameters]
       });
-      console.log("Survey submitted", transactionHash);
       return transactionHash;
-      // ethereum.request({
-      //   method: "eth_sendTransaction",
-      //   params: [parameters]
-      //   })
-      //   .then((trxHash) => {
-      //     console.log("Survey submitted", trxHash);
-      //     const interval = setInterval(() => {
-      //       console.log("Attempting to get transaction receipt...");
-      //       provider.eth.getTransactionReceipt(trxHash, (rec) => {
-      //         console.log("rec", rec);
-      //         if (rec) {
-      //           console.log("receipt", rec);
-      //           clearInterval(interval);
-      //         }
-      //       });
-      //     }, 1000);
-      //     // setWasTrxSubmitted
-      //   })
-      // -----
-      // return transactionHash;
     }
     catch (e) {
       console.error("Error submitting the survey -", e);
@@ -217,9 +189,9 @@ const useWallet = () => {
     checkItIsCorrectNetwork();
   }
 
-  const onAccountsChanged = () => {
-    window.location.reload();
-  }
+  // const onAccountsChanged = () => {
+  //   window.location.reload();
+  // }
 
   const addWalletListener = () => {
     const ethereum = getWindowEthereum();
@@ -227,18 +199,28 @@ const useWallet = () => {
     // ethereum.on("accountsChanged", onAccountsChanged);
   }
 
-  const getTransactionReceipt = (trxHash) => {
-    console.log("trxHash", trxHash);
-    const provider = getWeb3Provider();
-    const interval = setInterval(() => {
-      provider.eth.getTransactionReceipt(trxHash, (receipt) => {
-        console.log("verifing receipt...", receipt);
-        if (receipt) {
-          console.log("receipt found!", receipt);
-          clearInterval(interval);
-        }
-      });
+  const checkForTokenBalance = async () => {
+    console.log("checkForNewTokenBalance...");
+    let count = 0;
+    const timeValue = setInterval(async () => {
+      count++;
+      console.log("count", count);
+      if (count == 60) {
+        clearInterval(timeValue);
+      }
+      await getTokenBalance();
+      console.log("getTokenBalance method called...");
     }, 2000);
+    
+    // const interval = setInterval(() => {
+    //   provider.eth.getTransactionReceipt(trxHash, (receipt) => {
+    //     console.log("verifing receipt...", receipt);
+    //     if (receipt) {
+    //       console.log("receipt found!", receipt);
+    //       clearInterval(interval);
+    //     }
+    //   });
+    // }, 2000);
   }
 
   useEffect(() => {
@@ -265,7 +247,7 @@ const useWallet = () => {
     checkIfWalletIsInstalled,
     getWindowEthereum,
     submitTransaction,
-    getTransactionReceipt
+    checkForTokenBalance
   };
 }
  
