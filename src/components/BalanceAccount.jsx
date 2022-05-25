@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import useWallet from "../hooks/useWallet";
 
 const BalanceAccount = () => {
@@ -10,11 +9,6 @@ const BalanceAccount = () => {
     tokenSymbol,
     walletAddress,
   } = useWallet();
-
-  useEffect(() => {
-    console.log("isWalletConnected", isWalletConnected);
-    console.log("walletAddress", walletAddress);
-  }, [walletAddress]);
 
   if (!isWalletConnected && !walletAddress) return '';
 

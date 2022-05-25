@@ -10,9 +10,7 @@ const Index = ({ surveyData }) => {
     }
   }, []);
   return (
-    <MainContainer
-      surveyData={surveyData}
-    />
+    <MainContainer />
   );
 };
 

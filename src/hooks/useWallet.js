@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Web3 from "web3";
 import networks from '../../networks';
 import useWalletContext from "../contexts/walletContext";
@@ -27,18 +27,6 @@ const useWallet = () => {
     tokenBalance,
     setTokenBalance
   } = useWalletContext();
-  // const [walletAddress, setWalletAddress] = useState(null);
-  //web3
-  // const [web3Provider, setWeb3Provider] = useState(null);
-  //wallet
-  // const [isWalletInstalled, setIsWalletInstalled] = useState(true);
-  // const [isWalletConnected, setIsWalletConnected] = useState(null);
-  // const [isTheCorrectNetwork, setIsTheCorrectNetwork] = useState(null);
-  // const [smartContract, setSmartContract] = useState(null);
-  //token
-  // const [tokenName, setTokenName] = useState(null);
-  // const [tokenSymbol, setTokenSymbol] = useState(null);
-  // const [tokenBalance, setTokenBalance] = useState(null);
   
   const getWindowEthereum = () => {
     return window.ethereum;
@@ -168,6 +156,7 @@ const useWallet = () => {
       const provider = getWeb3Provider();
       const contract = await getContract();
       const balance = await contract.methods.balanceOf(walletAddress).call();
+      // console.log("balance", balance);
       setTokenBalance(provider.utils.fromWei(balance));
     }
     catch (err) {
@@ -175,34 +164,21 @@ const useWallet = () => {
     }
   }
 
-  const submitContract = async (answers) => {
-    console.log("---submitContract---");
-    console.log("answers", answers);
+  const submitTransaction = async (answers) => {
     const surveyId = getUniqueIntId();
-    console.log("surveyId", surveyId);
-    return false;
-    const selectedAnswers = surveyResults.map((p) => p.answerId);
-    console.log("selectedAnswers", selectedAnswers);
-    return false;
-    // [5, 3, 7]
     const contract = await getContract();
-    
     const parameters = {
       from: walletAddress,
       to: process.env.CONTRACT_ADDRESS,
-      data: contract.methods.submit(surveyId, selectedAnswers).encodeABI(),
+      data: contract.methods.submit(surveyId, answers).encodeABI(),
     };
-
-    console.log("parameters", parameters);
-
     try {
       const ethereum = getWindowEthereum();
-      console.log("Submitting the survey...");
-      const trxHash = await ethereum.request({
+      const transactionHash = await ethereum.request({
         method: "eth_sendTransaction",
         params: [parameters]
-      })
-      console.log("Survey submitted", trxHash);
+      });
+      return transactionHash;
     }
     catch (e) {
       console.error("Error submitting the survey -", e);
@@ -213,14 +189,38 @@ const useWallet = () => {
     checkItIsCorrectNetwork();
   }
 
-  const onAccountsChanged = () => {
-    window.location.reload();
-  }
+  // const onAccountsChanged = () => {
+  //   window.location.reload();
+  // }
 
   const addWalletListener = () => {
     const ethereum = getWindowEthereum();
     ethereum.on("chainChanged", onChainChanged)
     // ethereum.on("accountsChanged", onAccountsChanged);
+  }
+
+  const checkForTokenBalance = async () => {
+    console.log("checkForNewTokenBalance...");
+    let count = 0;
+    const timeValue = setInterval(async () => {
+      count++;
+      console.log("count", count);
+      if (count == 60) {
+        clearInterval(timeValue);
+      }
+      await getTokenBalance();
+      console.log("getTokenBalance method called...");
+    }, 2000);
+    
+    // const interval = setInterval(() => {
+    //   provider.eth.getTransactionReceipt(trxHash, (receipt) => {
+    //     console.log("verifing receipt...", receipt);
+    //     if (receipt) {
+    //       console.log("receipt found!", receipt);
+    //       clearInterval(interval);
+    //     }
+    //   });
+    // }, 2000);
   }
 
   useEffect(() => {
@@ -246,7 +246,8 @@ const useWallet = () => {
     getContract,
     checkIfWalletIsInstalled,
     getWindowEthereum,
-    submitContract
+    submitTransaction,
+    checkForTokenBalance
   };
 }
  
