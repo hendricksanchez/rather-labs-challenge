@@ -53,3 +53,20 @@ Additionally, the /src/contract-abi.json file exposes the methods available by t
 ## Application deployed on a server
 
 You can visit the site https://rather-labs-challenge-black.vercel.app/ to run the app directly.
+
+## Images of the running application
+
+![My Image](public/1.png)
+![My Image](public/2.png)
+![My Image](public/3.png)
+![My Image](public/4.png)
+![My Image](public/5.png)
+![My Image](public/6.png)
+![My Image](public/7.png)
+![My Image](public/8.png)
+![My Image](public/9.png)
+![My Image](public/10.png)
+![My Image](public/11.png)
+![My Image](public/12.png)
+![My Image](public/13.png)
+![My Image](public/14.png)
